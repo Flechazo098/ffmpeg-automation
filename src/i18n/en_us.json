@@ -24,6 +24,16 @@
   "quickTransImg.targetSuffix": "Target suffix",
   "quickTransImg.pickFiles": "Choose image files…",
 
+  "imageResize.cardLabel": "Image Fit-Size",
+  "imageResize.cardEn": "图片定尺寸",
+  "imageResize.cardDesc": "Resize and crop images to an exact resolution",
+  "imageResize.panelTitle": "Image Fit-Size",
+  "imageResize.panelSubtitle": "图片定尺寸",
+  "imageResize.panelMeta": "Scale and crop, no black bars",
+  "imageResize.width": "Target width",
+  "imageResize.height": "Target height",
+  "imageResize.pickFiles": "Choose image files…",
+
   "smartImageSquish.cardLabel": "Smart Image Squish",
   "smartImageSquish.cardEn": "智能图像压缩",
   "smartImageSquish.cardDesc": "Adaptive compression targeting final size",

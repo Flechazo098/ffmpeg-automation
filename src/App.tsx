@@ -9,6 +9,7 @@ import "./App.css";
 type ToolId =
   | "audioMorph"
   | "quickTransImg"
+  | "imageResize"
   | "smartImageSquish"
   | "vExtractor"
   | "videoXpress";
@@ -29,6 +30,8 @@ function App() {
   const [files, setFiles] = useState<string[]>([]);
   const [targetFormat, setTargetFormat] = useState("mp3");
   const [imageExt, setImageExt] = useState("webp");
+  const [resizeWidth, setResizeWidth] = useState("400");
+  const [resizeHeight, setResizeHeight] = useState("400");
   const [maxSize, setMaxSize] = useState("0");
   const [squishMode, setSquishMode] = useState<"1" | "2" | "3" | "4">("2");
   const [extractMode, setExtractMode] = useState<"1" | "2" | "3">("1");
@@ -48,6 +51,7 @@ function App() {
   const tools: ToolId[] = [
     "audioMorph",
     "quickTransImg",
+    "imageResize",
     "smartImageSquish",
     "vExtractor",
     "videoXpress",
@@ -125,7 +129,11 @@ function App() {
   }, [log]);
 
   function fileKindFor(tool: ToolId): FileKind {
-    if (tool === "quickTransImg" || tool === "smartImageSquish") {
+    if (
+      tool === "quickTransImg" ||
+      tool === "smartImageSquish" ||
+      tool === "imageResize"
+    ) {
       return "image";
     }
     if (tool === "videoXpress" || tool === "vExtractor") {
@@ -189,6 +197,18 @@ function App() {
           files,
           target_ext: imageExt,
         });
+      } else if (activeTool === "imageResize") {
+        const w = parseInt(resizeWidth, 10);
+        const h = parseInt(resizeHeight, 10);
+        if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) {
+          setLog("Invalid width or height");
+        } else {
+          await invoke("image_exact_resize", {
+            files,
+            width: w,
+            height: h,
+          });
+        }
       } else if (activeTool === "smartImageSquish") {
         const parsedMax = parseInt(maxSize, 10);
         await invoke("smart_image_squish", {
@@ -401,6 +421,70 @@ function App() {
                 disabled={busy}
               >
                 {t("quickTransImg.pickFiles")}
+              </button>
+              {renderFileSummary()}
+            </div>
+            <div className={dragActive ? "drop-zone active" : "drop-zone"}>
+              {t("common.dropHint")}
+            </div>
+            {renderFileListPanel()}
+            {renderPreview()}
+          </div>
+        </>
+      );
+    }
+
+    if (activeTool === "imageResize") {
+      return (
+        <>
+          <div className="panel-header">
+            <div>
+              <h2>{t("imageResize.panelTitle")}</h2>
+              <p className="panel-subtitle">
+                {t("imageResize.panelSubtitle")}
+              </p>
+            </div>
+            <div className="panel-meta">
+              {t("imageResize.panelMeta")}
+            </div>
+          </div>
+          <div className="panel-body">
+            <div className="field-row">
+              <label className="field-label">
+                {t("imageResize.width")}
+              </label>
+              <div className="inline-input">
+                <input
+                  className="field-control"
+                  value={resizeWidth}
+                  onChange={(e) => setResizeWidth(e.target.value)}
+                  inputMode="numeric"
+                  placeholder="400"
+                />
+              </div>
+            </div>
+            <div className="field-row">
+              <label className="field-label">
+                {t("imageResize.height")}
+              </label>
+              <div className="inline-input">
+                <input
+                  className="field-control"
+                  value={resizeHeight}
+                  onChange={(e) => setResizeHeight(e.target.value)}
+                  inputMode="numeric"
+                  placeholder="400"
+                />
+              </div>
+            </div>
+            <div className="field-row file-row">
+              <button
+                type="button"
+                className="button secondary"
+                onClick={handlePickFiles}
+                disabled={busy}
+              >
+                {t("imageResize.pickFiles")}
               </button>
               {renderFileSummary()}
             </div>

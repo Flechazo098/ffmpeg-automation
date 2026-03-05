@@ -178,6 +178,55 @@ async fn smart_image_squish(
 }
 
 #[tauri::command]
+async fn image_exact_resize(
+    window: Window,
+    files: Vec<String>,
+    width: u32,
+    height: u32,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err("Width and height must be greater than zero".to_string());
+    }
+    for file in files {
+        let input = PathBuf::from(&file);
+        if !input.exists() {
+            continue;
+        }
+        let parent = input.parent().unwrap_or_else(|| Path::new(""));
+        let stem = input
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .ok_or_else(|| "Invalid file name".to_string())?;
+        let ext = input
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("jpg")
+            .to_lowercase();
+        let output = parent.join(format!("{stem}_{width}x{height}.{ext}"));
+
+        let vf = format!(
+            "scale={width}:{height}:force_original_aspect_ratio=increase:flags=lanczos,crop={width}:{height}"
+        );
+
+        let args = vec![
+            "-i".to_string(),
+            file.clone(),
+            "-vf".to_string(),
+            vf,
+            "-q:v".to_string(),
+            "2".to_string(),
+            "-pix_fmt".to_string(),
+            "yuv420p".to_string(),
+            output.to_string_lossy().to_string(),
+        ];
+
+        let label = format!("[image-resize:{}x{}] {}", width, height, input.display());
+        run_ffmpeg(&window, &label, args)?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
 async fn v_extractor(window: Window, files: Vec<String>, choice: u8) -> Result<(), String> {
     for file in files {
         let input = PathBuf::from(&file);
@@ -516,6 +565,7 @@ pub fn run() {
             audio_morph,
             quick_trans_img,
             smart_image_squish,
+            image_exact_resize,
             v_extractor,
             video_xpress
         ])

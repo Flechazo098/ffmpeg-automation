@@ -24,6 +24,16 @@
   "quickTransImg.targetSuffix": "目标后缀",
   "quickTransImg.pickFiles": "选择图片文件…",
 
+  "imageResize.cardLabel": "图片定尺寸",
+  "imageResize.cardEn": "Image Fit-Size",
+  "imageResize.cardDesc": "批量缩放并裁剪到指定分辨率",
+  "imageResize.panelTitle": "图片定尺寸",
+  "imageResize.panelSubtitle": "Image Fit-Size",
+  "imageResize.panelMeta": "缩放并裁剪，无黑边",
+  "imageResize.width": "目标宽度",
+  "imageResize.height": "目标高度",
+  "imageResize.pickFiles": "选择图片文件…",
+
   "smartImageSquish.cardLabel": "智能图像压缩",
   "smartImageSquish.cardEn": "Smart Image Squish",
   "smartImageSquish.cardDesc": "以体积为目标的自适应压缩",

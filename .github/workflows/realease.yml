@@ -1,10 +1,15 @@
 name: publish
 
 on:
+  push:
+    paths:
+      - 'src-tauri/tauri.conf.json'
   workflow_dispatch:
 
 jobs:
   publish-tauri:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '')
+    
     permissions:
       contents: write
 
@@ -12,9 +17,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest      # Apple Silicon
+          - platform: macos-latest
             args: '--target aarch64-apple-darwin'
-          - platform: macos-latest      # Intel
+          - platform: macos-latest
             args: '--target x86_64-apple-darwin'
           - platform: ubuntu-22.04
             args: ''
@@ -25,6 +30,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version and commit message
+        id: info
+        shell: bash
+        run: |
+          VERSION=$(jq -r '.package.version' src-tauri/tauri.conf.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          MSG=$(git log -1 --pretty=%s)
+          echo "commit_msg=$MSG" >> $GITHUB_OUTPUT
 
       - name: Install Linux dependencies
         if: matrix.platform == 'ubuntu-22.04'
@@ -60,8 +77,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ffmpeg-automation-v__VERSION__
-          releaseName: 'FFmpeg Automation Studio v__VERSION__'
+          tagName: v${{ steps.info.outputs.version }}
+          releaseName: 'FFmpeg Automation Studio v${{ steps.info.outputs.version }}'
+          releaseBody: |
+            Release Notes:
+            ${{ steps.info.outputs.commit_msg }}
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
