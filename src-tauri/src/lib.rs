@@ -473,7 +473,9 @@ fn run_ffmpeg(window: &Window, label: &str, args: Vec<String>) -> Result<(), Str
 fn ffmpeg_executable() -> Result<PathBuf, String> {
     let exe = env::current_exe().map_err(|e| e.to_string())?;
     let dir = exe.parent().ok_or_else(|| "Cannot determine executable directory".to_string())?;
-    let candidate_dir = dir.join("ffmpeg").join("bin").join(ffmpeg_filename());
+
+    let candidate_dir = dir.join("resources").join("ffmpeg").join("bin").join(ffmpeg_filename());
+
     if candidate_dir.exists() {
         return Ok(candidate_dir);
     }
@@ -481,6 +483,12 @@ fn ffmpeg_executable() -> Result<PathBuf, String> {
     if candidate_flat.exists() {
         return Ok(candidate_flat);
     }
+
+    let candidate_bin = dir.join("ffmpeg").join("bin").join(ffmpeg_filename());
+    if candidate_bin.exists() {
+        return Ok(candidate_bin);
+    }
+
     Err("ffmpeg executable not found next to application".to_string())
 }
 
