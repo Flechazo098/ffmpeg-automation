@@ -33,3 +33,7 @@ npm run tauri dev
 # 构建
 npm run tauri build
 ```
+
+## 反馈
+
+如果您有想要的功能，欢迎通过 [Issues](https://github.com/Flechazo098/ffmpeg-automation/issues) 提交建议。
