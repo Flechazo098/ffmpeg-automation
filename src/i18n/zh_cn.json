@@ -13,6 +13,8 @@
   "audioMorph.panelSubtitle": "Audio Morph",
   "audioMorph.panelMeta": "多文件批量转码",
   "audioMorph.targetFormat": "目标格式",
+  "audioMorph.advanced": "高级选项",
+  "audioMorph.ekeyPlaceholder": "QQMusic ekey（mflac/mgg 解密用，可留空）",
   "audioMorph.pickFiles": "选择音频文件…",
 
   "quickTransImg.cardLabel": "图片格式转换",

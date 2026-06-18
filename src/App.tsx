@@ -29,6 +29,7 @@ function App() {
   const [activeTool, setActiveTool] = useState<ToolId>("audioMorph");
   const [files, setFiles] = useState<string[]>([]);
   const [targetFormat, setTargetFormat] = useState("mp3");
+  const [ekey, setEkey] = useState("");
   const [imageExt, setImageExt] = useState("webp");
   const [resizeWidth, setResizeWidth] = useState("400");
   const [resizeHeight, setResizeHeight] = useState("400");
@@ -190,12 +191,13 @@ function App() {
       if (activeTool === "audioMorph") {
         await invoke("audio_morph", {
           files,
-          target_format: targetFormat,
+          targetFormat: targetFormat,
+          ekey: ekey || null,
         });
       } else if (activeTool === "quickTransImg") {
         await invoke("quick_trans_img", {
           files,
-          target_ext: imageExt,
+          targetExt: imageExt,
         });
       } else if (activeTool === "imageResize") {
         const w = parseInt(resizeWidth, 10);
@@ -213,7 +215,7 @@ function App() {
         const parsedMax = parseInt(maxSize, 10);
         await invoke("smart_image_squish", {
           files,
-          max_size_kb: Number.isNaN(parsedMax) ? 0 : parsedMax,
+          maxSizeKb: Number.isNaN(parsedMax) ? 0 : parsedMax,
           mode: parseInt(squishMode, 10),
         });
       } else if (activeTool === "vExtractor") {
@@ -360,8 +362,24 @@ function App() {
                 <option value="m4a">AAC / M4A</option>
                 <option value="ogg">OGG</option>
                 <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
               </select>
             </div>
+            <details className="field-row advanced-options">
+              <summary className="field-label advanced-toggle">
+                {t("audioMorph.advanced")}
+              </summary>
+              <div className="field-row">
+                <label className="field-label">EKey</label>
+                <input
+                  className="field-control"
+                  type="text"
+                  placeholder={t("audioMorph.ekeyPlaceholder")}
+                  value={ekey}
+                  onChange={(e) => setEkey(e.target.value)}
+                />
+              </div>
+            </details>
             <div className="field-row file-row">
               <button
                 type="button"

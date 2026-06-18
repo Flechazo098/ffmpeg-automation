@@ -6,19 +6,26 @@ use tauri::{Emitter, Window};
 use tauri_plugin_dialog::init as dialog_init;
 use tauri_plugin_opener::init as opener_init;
 
+mod decrypt;
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
-async fn audio_morph(window: Window, files: Vec<String>, target_format: String) -> Result<(), String> {
+async fn audio_morph(window: Window, files: Vec<String>, target_format: String, ekey: Option<String>) -> Result<(), String> {
     let format = target_format.to_lowercase();
     for file in files {
         let input = PathBuf::from(&file);
         if !input.exists() {
             continue;
         }
+
+        // Decrypt encrypted audio format if needed
+        let decrypted = decrypt::maybe_decrypt(&input, ekey.as_deref())?;
+        let source = decrypted.path();
+
         let stem = input
             .file_stem()
             .and_then(|s| s.to_str())
@@ -26,7 +33,13 @@ async fn audio_morph(window: Window, files: Vec<String>, target_format: String) 
         let parent = input.parent().unwrap_or_else(|| Path::new(""));
         let output = parent.join(format!("{stem}.{format}"));
 
-        let mut args = vec!["-i".to_string(), file.clone()];
+        if output == input {
+            let msg = format!("[audio-morph] {} | skipped: already .{}", input.display(), format);
+            emit_log(&window, msg)?;
+            continue;
+        }
+
+        let mut args = vec!["-i".to_string(), source.to_string_lossy().to_string()];
         match format.as_str() {
             "mp3" => {
                 args.extend([
@@ -58,6 +71,14 @@ async fn audio_morph(window: Window, files: Vec<String>, target_format: String) 
                     "pcm_s16le".to_string(),
                 ]);
             }
+            "flac" => {
+                args.extend([
+                    "-c:a".to_string(),
+                    "flac".to_string(),
+                    "-compression_level".to_string(),
+                    "8".to_string(),
+                ]);
+            }
             _ => return Err(format!("Unsupported audio format: {}", format)),
         }
         args.push(output.to_string_lossy().to_string());
@@ -81,6 +102,12 @@ async fn quick_trans_img(window: Window, files: Vec<String>, target_ext: String)
             .ok_or_else(|| "Invalid file name".to_string())?;
         let parent = input.parent().unwrap_or_else(|| Path::new(""));
         let output = parent.join(format!("{stem}.{}", ext));
+
+        if output == input {
+            let msg = format!("[quick-trans-img] {} | skipped: already .{}", input.display(), ext);
+            emit_log(&window, msg)?;
+            continue;
+        }
 
         let args = vec![
             "-i".to_string(),

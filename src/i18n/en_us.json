@@ -13,6 +13,8 @@
   "audioMorph.panelSubtitle": "音频格式互转",
   "audioMorph.panelMeta": "Batch transcoding",
   "audioMorph.targetFormat": "Target format",
+  "audioMorph.advanced": "Advanced",
+  "audioMorph.ekeyPlaceholder": "QQMusic ekey (for mflac/mgg decryption, optional)",
   "audioMorph.pickFiles": "Choose audio files…",
 
   "quickTransImg.cardLabel": "Quick Trans-Img",

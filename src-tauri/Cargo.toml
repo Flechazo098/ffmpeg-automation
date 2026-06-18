@@ -1,3 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "crypto/um_audio",
+    "crypto/um_crypto/joox",
+    "crypto/um_crypto/kgm",
+    "crypto/um_crypto/kuwo",
+    "crypto/um_crypto/mg3d",
+    "crypto/um_crypto/ncm",
+    "crypto/um_crypto/qmc",
+    "crypto/um_crypto/qrc",
+    "crypto/um_crypto/qtfm",
+    "crypto/um_crypto/utils",
+    "crypto/um_crypto/xiami",
+    "crypto/um_crypto/xmly",
+]
+
 [package]
 name = "ffmpeg-automation"
 version = "0.1.0"
@@ -5,12 +22,7 @@ description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
-# The `_lib` suffix may seem redundant but it is necessary
-# to make the lib name unique and wouldn't conflict with the bin name.
-# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
 name = "ffmpeg_automation_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
@@ -23,3 +35,17 @@ tauri-plugin-opener = "2"
 tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+# Audio decryption (local crates, not committed to git)
+um_audio = { path = "crypto/um_audio" }
+umc_joox = { path = "crypto/um_crypto/joox" }
+umc_kgm = { path = "crypto/um_crypto/kgm" }
+umc_kuwo = { path = "crypto/um_crypto/kuwo" }
+umc_mg3d = { path = "crypto/um_crypto/mg3d" }
+umc_ncm = { path = "crypto/um_crypto/ncm" }
+umc_qmc = { path = "crypto/um_crypto/qmc" }
+umc_qrc = { path = "crypto/um_crypto/qrc" }
+umc_qtfm = { path = "crypto/um_crypto/qtfm" }
+umc_utils = { path = "crypto/um_crypto/utils" }
+umc_xiami = { path = "crypto/um_crypto/xiami" }
+umc_xmly = { path = "crypto/um_crypto/xmly" }
